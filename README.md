@@ -143,6 +143,8 @@ zoom e                          zoom to extents
 
 The web build: `cd apps/cadcraft-web && trunk serve` (needs [trunk](https://trunkrs.dev)).
 
+The Android build (`arm64-v8a` with hardware Vulkan / OpenGL ES GPU acceleration and full storage permissions + Storage Access Framework import/export): `./packaging/android/package.sh` (see [docs/android.md](docs/android.md)).
+
 ### Fonts
 
 CADCraft has no fonts in its repository; it uses the TrueType/OpenType fonts installed on your

@@ -184,11 +184,56 @@ impl Default for UiState {
     }
 }
 
+/// Which command asked for the file picker ([`Services::pick_open`] or [`Services::pick_save`]),
+/// so hosts whose file dialog is asynchronous (such as Android) can complete that command when
+/// the user finishes choosing a file.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum PickerKind {
+    Open,
+    NewTemplate,
+    Recover,
+    Import,
+    XAttach,
+    Linetype,
+    SaveAs,
+    Export,
+    ExportPdf,
+    Publish,
+    Plot,
+}
+
+std::thread_local! {
+    static LAST_PICKER_KIND: std::cell::Cell<Option<PickerKind>> = const { std::cell::Cell::new(None) };
+}
+
+/// The [`PickerKind`] of the most recent file-picker call on this thread.
+pub fn last_picker_kind() -> Option<PickerKind> {
+    LAST_PICKER_KIND.with(std::cell::Cell::get)
+}
+
+/// Trigger the Plot dialog's OK action on the next frame (used when an asynchronous save dialog
+/// finishes choosing the plot output path).
+pub fn resume_plot_save(ctx: &egui::Context) {
+    managers::set_flag(ctx, managers::PLOT_NOW, true);
+}
+
 /// Host services (file pickers, clipboard) injected by the app so this crate stays portable.
 #[derive(Default)]
 pub struct Services {
     pub pick_open: Option<Box<dyn Fn() -> Option<String>>>,
     pub pick_save: Option<Box<dyn Fn(&str) -> Option<String>>>,
+}
+
+impl Services {
+    pub(crate) fn pick_open_for(&self, kind: PickerKind) -> Option<String> {
+        LAST_PICKER_KIND.with(|c| c.set(Some(kind)));
+        self.pick_open.as_ref().and_then(|f| f())
+    }
+
+    pub(crate) fn pick_save_for(&self, kind: PickerKind, name: &str) -> Option<String> {
+        LAST_PICKER_KIND.with(|c| c.set(Some(kind)));
+        self.pick_save.as_ref().and_then(|f| f(name))
+    }
 }
 
 pub struct CadApp {

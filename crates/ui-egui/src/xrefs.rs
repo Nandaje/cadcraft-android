@@ -19,7 +19,7 @@ pub fn route(app: &mut CadApp, id: &str, params: &Value) -> Option<Result<Value,
     match cadcraft_engine::cmd::resolve_alias(id).as_str() {
         "xref" => Some(open_palette(app)),
         "xattach" => {
-            let picked = app.services.pick_open.as_ref().and_then(|f| f())?;
+            let picked = app.services.pick_open_for(crate::PickerKind::XAttach)?;
             let path = relative_to_host(app, &picked);
             if let Err(e) = app.session.start("xattach") {
                 return Some(Err(e.to_string()));

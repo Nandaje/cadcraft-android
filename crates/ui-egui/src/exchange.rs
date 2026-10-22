@@ -24,22 +24,28 @@ pub fn route(app: &mut CadApp, id: &str) -> Result<Value, String> {
             Ok(Value::Null)
         }
         "import" | "imp" => {
-            let Some(pick) = app.services.pick_open.as_ref() else { return no_picker(app, "IMPORT", r#"import {"path": "parts.dxf"}"#) };
-            match pick() {
+            if app.services.pick_open.is_none() {
+                return no_picker(app, "IMPORT", r#"import {"path": "parts.dxf"}"#);
+            }
+            match app.services.pick_open_for(crate::PickerKind::Import) {
                 Some(path) => app.run("import", json!({ "path": path })),
                 None => Ok(Value::Null),
             }
         }
         "publish" => {
-            let Some(pick) = app.services.pick_save.as_ref() else { return no_picker(app, "PUBLISH", "publish {}") };
-            match pick(&format!("{stem}.pdf")) {
+            if app.services.pick_save.is_none() {
+                return no_picker(app, "PUBLISH", "publish {}");
+            }
+            match app.services.pick_save_for(crate::PickerKind::Publish, &format!("{stem}.pdf")) {
                 Some(path) => app.run("publish", json!({ "path": path })),
                 None => Ok(Value::Null),
             }
         }
         _ => {
-            let Some(pick) = app.services.pick_save.as_ref() else { return no_picker(app, "EXPORT", r#"export {"format": "svg"}"#) };
-            match pick(&format!("{stem}.svg")) {
+            if app.services.pick_save.is_none() {
+                return no_picker(app, "EXPORT", r#"export {"format": "svg"}"#);
+            }
+            match app.services.pick_save_for(crate::PickerKind::Export, &format!("{stem}.svg")) {
                 Some(path) => app.run("export", json!({ "path": path })),
                 None => Ok(Value::Null),
             }

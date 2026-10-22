@@ -127,10 +127,10 @@ fn linetype(app: &mut CadApp, ctx: &egui::Context, open: &mut bool) -> Action {
                     }
                 }
                 // The user's own .lin file (where the host has a file picker).
-                if let Some(pick) = app.services.pick_open.as_ref() {
+                if app.services.pick_open.is_some() {
                     ui.separator();
                     if ui.selectable_label(false, "From File...").clicked()
-                        && let Some(path) = pick()
+                        && let Some(path) = app.services.pick_open_for(crate::PickerKind::Linetype)
                     {
                         action = Some(("linetype", json!({ "load": "*", "file": path })));
                     }
@@ -1029,12 +1029,12 @@ fn plot(app: &mut CadApp, ctx: &egui::Context, open: &mut bool) -> Action {
     }
     if ok {
         let mut params = plot_params(&st, None);
-        if let Some(pick) = app.services.pick_save.as_ref() {
+        if app.services.pick_save.is_some() {
             let title = app.session.state().map(|s| s.title.clone()).unwrap_or_default();
             let stem = std::path::Path::new(&title).file_stem().map(|s| s.to_string_lossy().to_string()).filter(|s| !s.is_empty());
             let suggested = format!("{}-{}.{ext}", stem.unwrap_or_else(|| "Drawing".into()), st.target);
             // Cancelling the file dialog keeps the Plot dialog open with its settings.
-            let Some(path) = pick(&suggested) else { return action };
+            let Some(path) = app.services.pick_save_for(crate::PickerKind::Plot, &suggested) else { return action };
             if let Some(o) = params.as_object_mut() {
                 o.insert("path".into(), json!(path));
             }
