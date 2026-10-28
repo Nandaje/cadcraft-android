@@ -47,6 +47,7 @@ pub const TABLE: &[(&str, Class)] = &[
     ("mcp", Class::Layer(5)),
     ("testkit", Class::Testkit),
     // apps and tooling
+    ("android", Class::Exempt),
     ("cadcraft", Class::Exempt),
     ("cli", Class::Exempt),
     ("web", Class::Exempt),
@@ -190,7 +191,7 @@ pub fn check(crates: &[Crate]) -> Vec<Violation> {
             }
         }
     }
-    out.sort_by_key(|v| v.to_string());
+    out.sort_by_key(ToString::to_string);
     out.dedup();
     out
 }

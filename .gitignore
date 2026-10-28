@@ -9,3 +9,9 @@
 *.swp
 /apps/cadcraft-web/dist/
 /.claude/worktrees/
+/packaging/android/.gradle/
+/packaging/android/build/
+/packaging/android/app/build/
+/packaging/android/app/src/main/jniLibs/
+/packaging/android/local.properties
+*.apk
