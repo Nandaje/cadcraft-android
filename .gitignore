@@ -13,5 +13,8 @@
 /packaging/android/build/
 /packaging/android/app/build/
 /packaging/android/app/src/main/jniLibs/
+/packaging/android/app/src/main/res/mipmap-*/
 /packaging/android/local.properties
+/packaging/android/hs_err_*.log
+/packaging/android/replay_*.log
 *.apk

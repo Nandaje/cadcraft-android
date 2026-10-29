@@ -12,6 +12,17 @@ HERE="$ROOT/packaging/android"
 JNI_LIBS="$HERE/app/src/main/jniLibs"
 
 mkdir -p "$JNI_LIBS/arm64-v8a"
+for pair in \
+  "mipmap-mdpi:$ROOT/assets/app-icon/hicolor/48x48/apps/ai.storyteller.cadcraft.png" \
+  "mipmap-hdpi:$ROOT/assets/app-icon/cadcraft-64.png" \
+  "mipmap-xhdpi:$ROOT/assets/app-icon/hicolor/128x128/apps/ai.storyteller.cadcraft.png" \
+  "mipmap-xxhdpi:$ROOT/assets/app-icon/cadcraft-256.png" \
+  "mipmap-xxxhdpi:$ROOT/assets/app-icon/hicolor/512x512/apps/ai.storyteller.cadcraft.png"; do
+  dir="${pair%%:*}"
+  src="${pair#*:}"
+  mkdir -p "$HERE/app/src/main/res/$dir"
+  cp "$src" "$HERE/app/src/main/res/$dir/ic_launcher.png"
+done
 (
   cd "$ROOT"
   if command -v cargo-ndk >/dev/null 2>&1; then

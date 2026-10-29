@@ -45,3 +45,29 @@ android {
         }
     }
 }
+
+val syncLauncherIcons by tasks.registering {
+    description = "Copies CADCraft launcher icons from assets/app-icon into Android mipmap directories"
+    doLast {
+        val iconRoot = rootProject.projectDir.resolve("../../assets/app-icon")
+        val resRoot = projectDir.resolve("src/main/res")
+        val densityMap = mapOf(
+            "mipmap-mdpi" to iconRoot.resolve("hicolor/48x48/apps/ai.storyteller.cadcraft.png"),
+            "mipmap-hdpi" to iconRoot.resolve("cadcraft-64.png"),
+            "mipmap-xhdpi" to iconRoot.resolve("hicolor/128x128/apps/ai.storyteller.cadcraft.png"),
+            "mipmap-xxhdpi" to iconRoot.resolve("cadcraft-256.png"),
+            "mipmap-xxxhdpi" to iconRoot.resolve("hicolor/512x512/apps/ai.storyteller.cadcraft.png")
+        )
+        for ((dirName, srcFile) in densityMap) {
+            if (srcFile.exists()) {
+                val targetDir = resRoot.resolve(dirName)
+                targetDir.mkdirs()
+                srcFile.copyTo(targetDir.resolve("ic_launcher.png"), overwrite = true)
+            }
+        }
+    }
+}
+
+tasks.named("preBuild") {
+    dependsOn(syncLauncherIcons)
+}
