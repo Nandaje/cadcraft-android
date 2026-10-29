@@ -12,8 +12,8 @@ android {
         applicationId = "ai.storyteller.cadcraft"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1300
-        versionName = "0.13.0"
+        versionCode = 1400
+        versionName = "0.14.0"
 
         ndk {
             abiFilters += listOf("arm64-v8a")

@@ -136,7 +136,7 @@ impl AndroidShell {
 
     fn execute_open_path(&mut self, kind: PickerKind, path: &str) {
         match kind {
-            PickerKind::Open => self.app.open_path(path),
+            PickerKind::Open => self.app.open_path(std::path::Path::new(path)),
             PickerKind::NewTemplate => {
                 if let Err(e) = self.app.run("new", json!({ "template": path })) {
                     self.app.set_status(e);
@@ -185,7 +185,7 @@ impl AndroidShell {
                     self.app.cmdline(path);
                 }
             }
-            _ => self.app.open_path(path),
+            _ => self.app.open_path(std::path::Path::new(path)),
         }
     }
 
